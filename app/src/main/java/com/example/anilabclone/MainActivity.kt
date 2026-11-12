@@ -1,4 +1,5 @@
-package com.example.anilabclone
+python3 -c '
+code = """package com.example.anilabclone
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -55,7 +56,6 @@ fun AniLabMainScreen() {
     var isLoading by remember { mutableStateOf(false) }
     var selectedAudioType by remember { mutableStateOf("SUB") }
     var currentEpisode by remember { mutableIntStateOf(1) }
-    var availableStreams by remember { mutableStateOf<List<StreamLink>>(emptyList()) }
     var activeStream by remember { mutableStateOf<StreamLink?>(null) }
     var resumePositionMs by remember { mutableLongStateOf(0L) }
     var isFullScreen by remember { mutableStateOf(false) }
@@ -74,8 +74,8 @@ fun AniLabMainScreen() {
         resumePositionMs = LocalStorageManager.getSavedEpisodePosition(context, anime.id, epNum)
         scope.launch {
             isLoading = true
-            availableStreams = AnimeRepository.resolveEpisodeStreams(anime.title, anime.romajiTitle, epNum, audioType)
-            activeStream = availableStreams.firstOrNull()
+            val streams = AnimeRepository.resolveEpisodeStreams(anime.title, anime.romajiTitle, epNum, audioType)
+            activeStream = streams.firstOrNull()
             isLoading = false
         }
     }
@@ -199,3 +199,7 @@ fun AniLabMainScreen() {
         }
     }
 }
+"""
+open("app/src/main/java/com/example/anilabclone/MainActivity.kt", "w").write(code)
+print("SAVED BYTES:", len(code))
+' && git add . && git commit -m "Write MainActivity via python" && git push -u origin main
